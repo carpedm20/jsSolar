@@ -61,6 +61,7 @@ function drawBackground(context) {
 }
 
 function reverseDrawPath() {
+    drawBackground(context);
     drawPath = !drawPath;
 }
 
