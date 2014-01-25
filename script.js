@@ -10,13 +10,58 @@ var width, height;
 var centerPlanet;
 var mercury, venus, earth, moon, jupiter, io, europa, ganymede, callisto, sun;
 
-function Point (x, y) {
+var drawPath = false;
+
+var speedRatio = 1.0;
+
+var zoom = 1.0;
+
+function zoomIn() {
+    drawBackground(context);
+    zoom /= 2;
+}
+
+function zoomOut() {
+    drawBackground(context);
+    zoom *= 2;
+}
+
+function zoomDefault() {
+    drawBackground(context);
+    zoom = 1.0;
+}
+
+function speedUp() {
+    drawBackground(context);
+    speedRatio *= 2;
+}
+
+function speedDown() {
+    drawBackground(context);
+    speedRatio /= 2;
+}
+
+function speedDefault() {
+    drawBackground(context);
+    speedRatio = 1.0;
+}
+
+function Point(x, y) {
     this.x = x;
     this.y = y;
 };
 
 function setCenterPlanet(planet) {
+    drawBackground(context);
     centerPlanet = planet;
+}
+
+function drawBackground(context) {
+    context.clearRect(0, 0, width, height);
+}
+
+function reverseDrawPath() {
+    drawPath = !drawPath;
 }
 
 window.onload = function(){ 
@@ -30,12 +75,12 @@ window.onload = function(){
     canvas.height = height;
 
     function normalizeOrbitRadius(r) {
-        var radius = r * (width / 10.0);
+        var radius = r * (width / 10.0 / zoom);
         return radius;
     };
 
     function normalizePlanetSize(r) {
-        var size = Math.log(r + 1) * (width / 100.0);
+        var size = Math.log(r + 1) * (width / 100.0 / zoom);
         return size;
     };
 
@@ -44,8 +89,16 @@ window.onload = function(){
             this.planets.push(planet);
         };
 
+    drawBackground(context);
         this.calculatePos = function (p) {
-            if (this.orbitSpeed == 0.0) return p;
+            this.bodySize = normalizePlanetSize(bodySize);
+            this.orbitRadius = normalizeOrbitRadius(orbitRadius);
+
+            if (this.orbitSpeed == 0.0) {
+                return p;
+            }
+
+            this.orbitSpeed = this.calculateSpeed(orbitPeriod);
             var angle = renderTime * this.orbitSpeed;
             var point = new Point(this.orbitRadius * Math.cos(angle) + p.x, this.orbitRadius * Math.sin(angle) + p.y);
             
@@ -88,8 +141,12 @@ window.onload = function(){
             var centerPos = centerPlanet.calculatePos(p);
             var pos = this.calculatePos(p);
 
-            pos.x -= centerPos.x - width/2;
-            pos.y -= centerPos.y - height/2;
+            if (["moon", "io", "europa", "ganymede", "callisto"].indexOf(this.name) >= 0) {
+                //notes.textContent = "pos.x : " +  moon.calculatePos(p).x + ", centerPos.x : " + pos.x + ", width/2 : " + (width/2);
+            } else {
+                pos.x -= centerPos.x - width/2;
+                pos.y -= centerPos.y - height/2;
+            }
 
             this.drawSelf(context, pos);
             this.drawChildren(context, pos);
@@ -102,7 +159,7 @@ window.onload = function(){
         };
 
         this.calculateSpeed = function(period) {
-            var speed =  period == 0.0 ? 0.0 : 1 / (60.0 * 24.0 * 2 * period);
+            var speed =  period == 0.0 ? 0.0 : speedRatio * 1 / (60.0 * 24.0 * 2 * period);
             return speed;
         };
 
@@ -127,13 +184,12 @@ window.onload = function(){
     venus = new Planet("venus", "green", 0.949, 0.723, 0.615);
     earth = new Planet("earth", "#33f", 1.0, 1.0, 1.0);
     moon = new Planet("moon", "gray", 0.2, 0.14, 0.075);
-    //earth.addPlanet(moon);
+    earth.addPlanet(moon);
 
     var f = 0.1;
     var h = 1 / 1500.0;
     var g = 1 / 72.0;
 
-    /*
     jupiter = new Planet("jupiter", "gray", 4.0, 5.203, 11.86);
     io = new Planet("io", "gray", 3.6*f, 421*h, 1.769*g);
     europa = new Planet("europa", "gray", 3.1*f, 671*h, 3.551*g);
@@ -143,13 +199,12 @@ window.onload = function(){
     jupiter.addPlanet(europa);
     jupiter.addPlanet(ganymede);
     jupiter.addPlanet(callisto);
-    */
 
     sun = new Planet("sun", "#ff2", 14.0, 0, 0);
     sun.addPlanet(mercury);
     sun.addPlanet(venus);
     sun.addPlanet(earth);
-    //sun.addPlanet(jupiter);
+    sun.addPlanet(jupiter);
     addAsteroidBelt(sun, 350);
 
     function showFps(fps) {
@@ -163,13 +218,9 @@ window.onload = function(){
         // if (renderTime != null) showFps(1000 / (time - renderTime));
         renderTime = time;
 
-        context.fillStyle = "rgb(200,0,0)";
-        context.fillRect (10, 10, 55, 50);
+        if (!drawPath)
+            drawBackground(context);
 
-        context.fillStyle = "rgba(0, 0, 200, 0.5)";
-        context.fillRect (30, 30, 55, 50);
-
-        drawBackground(context);
         drawPlanets(context);
 
         requestRedraw();

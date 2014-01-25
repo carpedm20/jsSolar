@@ -11,14 +11,21 @@
     <button onclick="setCenterPlanet(mercury);">Mercury</button>
     <button onclick="setCenterPlanet(venus);">Venus</button>
     <button onclick="setCenterPlanet(earth);">Earth</button>
-    <!--<button onclick="setCenterPlanet(moon);">Moon</button>
-    <button onclick="setCenterPlanet(jupiter);">Jupiter</button>
+    <button onclick="setCenterPlanet(moon);">Moon</button>
+    <!--<button onclick="setCenterPlanet(jupiter);">Jupiter</button>
     <button onclick="setCenterPlanet(io);">Io</button>
     <button onclick="setCenterPlanet(europa);">Europa</button>
     <button onclick="setCenterPlanet(ganymede);">Ganymede</button>
     <button onclick="setCenterPlanet(callisto);">Callisto</button>-->
+    | <button onclick="reverseDrawPath();">Draw Path</button>
+    | <button onclick="speedUp();">Speed Up</button>
+    <button onclick="speedDown();">Speed Down</button>
+    <button onclick="speedDefault();">Default Speed</button>
+    | <button onclick="zoomIn();">Zoom In</button>
+    <button onclick="zoomOut();">Zoom Out</button>
+    <button onclick="zoomDefault();">Default Zoom</button>
     <div id="container">
-      <canvas id="area" width="500px" height="800px"></canvas>
+      <canvas id="area"></canvas>
     </div>
     <footer>
       <p id="fps"></p>
