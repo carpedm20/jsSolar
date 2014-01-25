@@ -64,6 +64,15 @@ function reverseDrawPath() {
     drawPath = !drawPath;
 }
 
+function getRandomColor() {
+    var letters = '0123456789ABCDEF'.split('');
+    var color = '#';
+    for (var i = 0; i < 6; i++ ) {
+        color += letters[Math.round(Math.random() * 15)];
+    }
+    return color;
+}
+
 window.onload = function(){ 
     canvas = document.getElementById("area");
     notes = document.getElementById("fps");
@@ -91,7 +100,11 @@ window.onload = function(){
 
     drawBackground(context);
         this.calculatePos = function (p) {
-            this.bodySize = normalizePlanetSize(bodySize);
+            if (drawPath)
+                this.bodySize = 1 / zoom;
+            else
+                this.bodySize = normalizePlanetSize(bodySize);
+
             this.orbitRadius = normalizeOrbitRadius(orbitRadius);
 
             if (this.orbitSpeed == 0.0) {
@@ -175,7 +188,7 @@ window.onload = function(){
     function addAsteroidBelt(planet, count) {
         for (var i=0; i<count; i++) {
             var radius = 2.06 + Math.random() * (3.27 - 2.06);
-            planet.addPlanet(new Planet("asteroidBelt", "#777", 
+            planet.addPlanet(new Planet("asteroidBelt", getRandomColor(), 
                 0.1 * Math.random(), radius, radius * 2));
         }
     };
@@ -191,10 +204,10 @@ window.onload = function(){
     var g = 1 / 72.0;
 
     jupiter = new Planet("jupiter", "gray", 4.0, 5.203, 11.86);
-    io = new Planet("io", "gray", 3.6*f, 421*h, 1.769*g);
-    europa = new Planet("europa", "gray", 3.1*f, 671*h, 3.551*g);
-    ganymede = new Planet("ganymede", "gray", 5.3*f, 1070*h, 7.154*g);
-    callisto = new Planet("callisto", "gray", 4.8*f, 1882*h, 16.689*g);
+    io = new Planet("io", getRandomColor(), 3.6*f, 421*h, 1.769*g);
+    europa = new Planet("europa", getRandomColor(), 3.1*f, 671*h, 3.551*g);
+    ganymede = new Planet("ganymede", getRandomColor(), 5.3*f, 1070*h, 7.154*g);
+    callisto = new Planet("callisto", getRandomColor(), 4.8*f, 1882*h, 16.689*g);
     jupiter.addPlanet(io);
     jupiter.addPlanet(europa);
     jupiter.addPlanet(ganymede);
